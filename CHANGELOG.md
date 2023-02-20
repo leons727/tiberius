@@ -1,5 +1,29 @@
 # Changes
 
+## Version 0.12.1
+
+- fix: bigdecimal conversion overflow (#271)
+- Reduce futures crate dependency footprint (#270)
+
+## Version 0.12.0
+
+- BREAKING: Correctly convert DateTimeOffset to/from database (#269)
+  Please read the [issue](https://github.com/prisma/tiberius/issues/260)
+  carefully before upgrading.
+
+## Version 0.11.6
+
+- fix: bigdecimal conversion overflow (#271)
+
+## Version 0.11.5
+
+- Close connection explicitly (#268)
+
+## Version 0.11.4
+
+- Fix buffer overrun on finalize (#266)
+- Correctly parse (local) server name (#259)
+
 ## Version 0.11.3
 
 - Cleanup TokenRow public API (#255)

@@ -20,7 +20,10 @@ use asynchronous_codec::Framed;
 use bytes::BytesMut;
 #[cfg(any(windows, feature = "integrated-auth-gssapi"))]
 use codec::TokenSspi;
-use futures::{ready, AsyncRead, AsyncWrite, SinkExt, Stream, TryStream, TryStreamExt};
+use futures_util::io::{AsyncRead, AsyncWrite};
+use futures_util::ready;
+use futures_util::sink::SinkExt;
+use futures_util::stream::{Stream, TryStream, TryStreamExt};
 #[cfg(all(unix, feature = "integrated-auth-gssapi"))]
 use libgssapi::{
     context::{ClientCtx, CtxFlags},
@@ -484,6 +487,10 @@ impl<S: AsyncRead + AsyncWrite + Unpin + Send> Connection<S> {
 
         Ok(self)
     }
+
+    pub(crate) async fn close(mut self) -> crate::Result<()> {
+        self.transport.close().await
+    }
 }
 
 impl<S: AsyncRead + AsyncWrite + Unpin + Send> Stream for Connection<S> {
@@ -503,7 +510,7 @@ impl<S: AsyncRead + AsyncWrite + Unpin + Send> Stream for Connection<S> {
     }
 }
 
-impl<S: AsyncRead + AsyncWrite + Unpin + Send> futures::AsyncRead for Connection<S> {
+impl<S: AsyncRead + AsyncWrite + Unpin + Send> futures_util::io::AsyncRead for Connection<S> {
     fn poll_read(
         self: Pin<&mut Self>,
         cx: &mut task::Context<'_>,

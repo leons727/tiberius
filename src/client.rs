@@ -25,8 +25,8 @@ use crate::{
 };
 use codec::{BatchRequest, ColumnData, PacketHeader, RpcParam, RpcProcId, TokenRpcRequest};
 use enumflags2::BitFlags;
-use futures::{AsyncRead, AsyncWrite};
-use futures_util::TryStreamExt;
+use futures_util::io::{AsyncRead, AsyncWrite};
+use futures_util::stream::TryStreamExt;
 use std::{borrow::Cow, fmt::Debug};
 
 /// `Client` is the main entry point to the SQL Server, providing query
@@ -345,6 +345,11 @@ impl<S: AsyncRead + AsyncWrite + Unpin + Send> Client<S> {
         ts.flush_done().await?;
 
         BulkLoadRequest::new(&mut self.connection, columns)
+    }
+
+    /// Closes this database connection explicitly.
+    pub async fn close(self) -> crate::Result<()> {
+        self.connection.close().await
     }
 
     pub(crate) fn rpc_params<'a>(query: impl Into<Cow<'a, str>>) -> Vec<RpcParam<'a>> {
